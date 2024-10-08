@@ -180,23 +180,6 @@ test2 <- test2[-which(test2$Freq <= 3),]
 data4 <- data3[which(data3$Binomial %in% test2$Var1),]
 sort(table(data4$Binomial))
 
-scaledMassIndex <-
-  function(x, y, x.0 = mean(x)) {
-    logM.ols <- lm(log(y) ~ log(x))
-    logM.rob <- rlm(log(y) ~ log(x), method = "M")
-    b.msa.ols <- coef(sma(log(y) ~ log(x)))[2]
-    b.msa.rob <- coef(sma(log(y) ~ log(x), robust = T))[2]
-    SMI.ols <- y * (x.0 / x) ^ b.msa.ols
-    SMI.rob <- y * (x.0 / x) ^ b.msa.rob
-    res <- data.frame(SMI.ols, SMI.rob, x, y)
-    pred.DT <-
-      data.table(x = seq(min(x), max(x), length = 100)) %>%
-      .[, y.ols := predict(logM.ols, newdata = .) %>% exp] %>%
-      .[, y.rob := predict(logM.rob, newdata = .) %>% exp]
-    attr(res, "b.msa") <- c(ols = b.msa.ols, rob = b.msa.rob)
-    return(res)
-  }
-
 ## Body condition
 data4$BodyCond <- NA
 especies <- unique(data4$Binomial)
